@@ -1,0 +1,69 @@
+version: "3"
+services:
+  app:
+    build:
+      context: ""
+      dockerfile: ./Dockerfile
+    working_dir: /home/node/app
+    command: "tail -f"
+    volumes:
+      - ./:/home/node/app
+    tty: true
+    depends_on:
+      - kafka1
+      - zookeeper
+
+  zookeeper:
+    image: 'bitnami/zookeeper:3.6.3'
+    ports:
+      - '2181:2181'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+
+  kafka1:
+    image: 'bitnami/kafka:3.0.1'
+    ports:
+      - '9092'
+      - '19093:9093'
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka1:9092,EXTERNAL://${KAFKA1_EXTERNAL_HOST}
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=CLIENT
+    depends_on:
+      - zookeeper
+
+  kafka2:
+    image: 'bitnami/kafka:3.0.1'
+    ports:
+      - '9092'
+      - '29093:9093'
+    environment:
+      - KAFKA_BROKER_ID=2
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka2:9092,EXTERNAL://${KAFKA2_EXTERNAL_HOST}
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=CLIENT
+    depends_on:
+      - zookeeper
+
+  kafka3:
+    image: 'bitnami/kafka:3.0.1'
+    ports:
+      - '9092'
+      - '39093:9093'
+    environment:
+      - KAFKA_BROKER_ID=3
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka3:9092,EXTERNAL://${KAFKA3_EXTERNAL_HOST}
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=CLIENT
+    depends_on:
+      - zookeeper
